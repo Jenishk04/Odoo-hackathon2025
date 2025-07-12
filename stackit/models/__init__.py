@@ -3,3 +3,4 @@
 from . import stackit_question
 from . import stackit_answer
 from . import stackit_tag
+from . import stackit_vote

@@ -47,5 +47,175 @@
                 </tree>
             </field>
         </record>
+
+
+        <!-- Partial template for a single answer (for AJAX and initial render) -->
+        <template id="stackit_answer_partial">
+            <div class="card mb-2">
+                <div class="card-body d-flex align-items-start">
+                    <!-- Voting for Answer -->
+                    <div class="me-3 text-center">
+                        <t t-if="user and user.id">
+                            <form t-att-action="'/stackit/answer/upvote/%d' % answer.id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-link p-0">&#8679;</button>
+                            </form>
+                        </t>
+                        <t t-if="not (user and user.id)">
+                            <button class="btn btn-link p-0" onclick="window.location='/web/login'">&#8679;</button>
+                        </t>
+                        <div><t t-esc="answer.up"/></div>
+                        <t t-if="user and user.id">
+                            <form t-att-action="'/stackit/answer/downvote/%d' % answer.id" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-link p-0">&#8681;</button>
+                            </form>
+                        </t>
+                        <t t-if="not (user and user.id)">
+                            <button class="btn btn-link p-0" onclick="window.location='/web/login'">&#8681;</button>
+                        </t>
+                    </div>
+                    <!-- Answer Content -->
+                    <div>
+                        <div><strong>Answer <t t-esc="answer.id"/></strong></div>
+                        <div><t t-esc="answer.answer"/></div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- StackIt Question Detail Page Template with AJAX answer submission -->
+        <template id="stackit_question_detail" name="StackIt Question Detail">
+            <t t-call="website.layout">
+                <div class="container mt-4">
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/stackit">Questions</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                <t t-esc="question.title or question.title[:50]"/>
+                            </li>
+                        </ol>
+                    </nav>
+                    <!-- Question Info -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h3 class="card-title"><t t-esc="question.title"/></h3>
+                            <div class="mb-2">
+                                <t t-foreach="question.tags" t-as="tag">
+                                    <span class="badge bg-secondary me-1"><t t-esc="tag.name"/></span>
+                                </t>
+                            </div>
+                            <div class="card-text text-muted" style="font-style:italic;">
+                                <t t-raw="question.description"/>
+                            </div>
+                            <small class="text-muted">By <t t-esc="question.user_id.name"/></small>
+                        </div>
+                    </div>
+                    <!-- Answers Section -->
+                    <div class="mb-4" id="answers-list">
+                        <h5>Answers</h5>
+                        <t t-if="question.answers">
+                            <t t-foreach="question.answers" t-as="answer">
+                                <t t-call="stackit.stackit_answer_partial">
+                                    <t t-set="answer" t-value="answer"/>
+                                    <t t-set="user" t-value="user"/>
+                                </t>
+                            </t>
+                        </t>
+                        <t t-if="not question.answers">
+                            <div class="text-muted">No answers yet.</div>
+                        </t>
+                    </div>
+                    <!-- Submit Your Answer (AJAX) -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Submit Your Answer</h6>
+                            <form id="answer-form" t-att-action="'/stackit/question/%s/answer' % question.id" method="post">
+                                <textarea class="form-control mb-2" id="answer-input" name="answer" rows="4" placeholder="Your answer..."></textarea>
+                                <button type="submit" class="btn btn-primary" id="submit-answer-btn">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+        <!-- StackIt Ask Question Page Template -->
+        <template id="stackit_ask_question" name="StackIt Ask Question">
+            <t t-call="website.layout">
+                <div class="container mt-4">
+                    <h2>Ask a Question</h2>
+                    <form action="/stackit/ask" method="post">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required="required"/>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control o_website_form_editor" id="description" name="description" rows="6" required="required"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">Tags</label>
+                            <input type="text" class="form-control" id="tags" name="tags" placeholder="Comma-separated (e.g. SQL, Python)"/>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </t>
+        </template>
+        <!-- Comment: StackIt Home Page Template -->
+        <template id="stackit_homepage" name="StackIt Home Page">
+            <t t-call="website.layout">
+                <div class="container mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2>StackIt</h2>
+                        <a href="/stackit/ask" class="btn btn-primary">Ask New Question</a>
+                    </div>
+                    <!-- Filters and Search -->
+                    <form method="get" action="/stackit" class="row mb-3">
+                        <div class="col-md-3">
+                            <select class="form-select" name="filter" onchange="this.form.submit()">
+                                <option t-att-selected="filter == 'newest'" value="newest">Newest</option>
+                                <option t-att-selected="filter == 'unanswered'" value="unanswered">Unanswered</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="search" t-att-value="search or ''" placeholder="Search questions..."/>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button type="submit" class="btn btn-outline-secondary">Search</button>
+                            <a href="/web/login" class="btn btn-outline-secondary ms-2">Login</a>
+                        </div>
+                    </form>
+                    <!-- Question List -->
+                    <div class="list-group">
+                        <t t-foreach="questions" t-as="question">
+                            <a t-att-href="'/stackit/question/%s' % question.id" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1"><t t-esc="question.title"/></h5>
+                                    <small><t t-esc="question.create_date.strftime('%Y-%m-%d') if question.create_date else ''"/></small>
+                                </div>
+                                <p class="mb-1"><t t-esc="(question.title or '')[:120]"/>...</p>
+                                <small>By <t t-esc="question.user_id.name"/> | <t t-esc="len(question.answers)"/> Answers</small>
+                            </a>
+                        </t>
+                    </div>
+                    <!-- Pagination (static for now) -->
+                    <nav aria-label="Page navigation" class="mt-3">
+                        <ul class="pagination justify-content-center">
+                            <li t-if="page &gt; 1" class="page-item">
+                                <a class="page-link" t-att-href="'/stackit?page=%d&amp;search=%s&amp;filter=%s' % (page-1, search or '', filter or '')">Previous</a>
+                            </li>
+                            <t t-foreach="range(1, page_count+1)" t-as="p">
+                                <li t-attf-class="page-item#{' active' if p == page else ''}">
+                                    <a class="page-link" t-att-href="'/stackit?page=%d&amp;search=%s&amp;filter=%s' % (p, search or '', filter or '')"><t t-esc="p"/></a>
+                                </li>
+                            </t>
+                            <li t-if="page &lt; page_count" class="page-item">
+                                <a class="page-link" t-att-href="'/stackit?page=%d&amp;search=%s&amp;filter=%s' % (page+1, search or '', filter or '')">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </t>
+        </template>
     </data>
 </odoo>

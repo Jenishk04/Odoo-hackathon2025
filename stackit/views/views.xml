@@ -19,10 +19,9 @@
             <field name="arch" type="xml">
                 <form string="Question">
                     <group>
-                        <field name="question"/>
+                        <field name="title"/>
+                        <field name="description"/>
                         <field name="tags" widget="many2many_tags"/>
-                        <field name="up"/>
-                        <field name="down"/>
                         <field name="user_id" readonly="1"/>
                     </group>
                     <notebook>
@@ -38,8 +37,6 @@
                         </page>
                     </notebook>
                     <footer>
-                        <button name="action_upvote" string="Upvote" type="object" class="btn-primary"/>
-                        <button name="action_downvote" string="Downvote" type="object" class="btn-primary"/>
                         <button string="Cancel" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
@@ -52,10 +49,8 @@
             <field name="model">stackit.question</field>
             <field name="arch" type="xml">
                 <tree>
-                    <field name="question"/>
+                    <field name="title"/>
                     <field name="tags" widget="many2many_tags"/>
-                    <field name="up"/>
-                    <field name="down"/>
                     <field name="user_id"/>
                 </tree>
             </field>
