@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Menu -->
+        <menuitem id="stackit_menu" name="StackIt" sequence="10"/>
+
+        <!-- Action for Questions List -->
+        <record id="action_stackit_questions" model="ir.actions.act_window">
+            <field name="name">StackIt Questions</field>
+            <field name="res_model">stackit.question</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="stackit_questions_menu" name="Questions" parent="stackit_menu" action="action_stackit_questions"/>
+
+        <!-- Form View for Question -->
+        <record id="view_stackit_question_form" model="ir.ui.view">
+            <field name="name">stackit.question.form</field>
+            <field name="model">stackit.question</field>
+            <field name="arch" type="xml">
+                <form string="Question">
+                    <group>
+                        <field name="question"/>
+                        <field name="tags" widget="many2many_tags"/>
+                        <field name="up"/>
+                        <field name="down"/>
+                        <field name="user_id" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Answers">
+                            <field name="answers">
+                                <tree editable="bottom">
+                                    <field name="answer"/>
+                                    <field name="up"/>
+                                    <field name="down"/>
+                                    <field name="user_id" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <footer>
+                        <button name="action_upvote" string="Upvote" type="object" class="btn-primary"/>
+                        <button name="action_downvote" string="Downvote" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View for Questions -->
+        <record id="view_stackit_question_tree" model="ir.ui.view">
+            <field name="name">stackit.question.tree</field>
+            <field name="model">stackit.question</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="question"/>
+                    <field name="tags" widget="many2many_tags"/>
+                    <field name="up"/>
+                    <field name="down"/>
+                    <field name="user_id"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>

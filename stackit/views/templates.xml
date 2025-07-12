@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Action for Answers List -->
+        <record id="action_stackit_answers" model="ir.actions.act_window">
+            <field name="name">StackIt Answers</field>
+            <field name="res_model">stackit.answer</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu Item for Answers -->
+        <menuitem id="stackit_answers_menu" name="Answers" parent="stackit_menu" action="action_stackit_answers"/>
+
+        <!-- Form View for Answer -->
+        <record id="view_stackit_answer_form" model="ir.ui.view">
+            <field name="name">stackit.answer.form</field>
+            <field name="model">stackit.answer</field>
+            <field name="arch" type="xml">
+                <form string="Answer">
+                    <group>
+                        <field name="question_id" required="1"/>
+                        <field name="answer"/>
+                        <field name="up"/>
+                        <field name="down"/>
+                        <field name="user_id" readonly="1"/>
+                    </group>
+                    <footer>
+                        <button name="action_upvote" string="Upvote" type="object" class="btn-primary"/>
+                        <button name="action_downvote" string="Downvote" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View for Answers -->
+        <record id="view_stackit_answer_tree" model="ir.ui.view">
+            <field name="name">stackit.answer.tree</field>
+            <field name="model">stackit.answer</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="question_id"/>
+                    <field name="answer"/>
+                    <field name="up"/>
+                    <field name="down"/>
+                    <field name="user_id"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>

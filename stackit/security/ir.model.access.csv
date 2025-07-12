@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stackit_answer,access_stackit_answer,model_stackit_answer,base.group_user,1,1,1,1
+access_stackit_question,access_stackit_question,model_stackit_question,base.group_user,1,1,1,1
+access_stackit_tag,access_stackit_tag,model_stackit_tag,base.group_user,1,1,1,1
